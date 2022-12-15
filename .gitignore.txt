@@ -1,0 +1,9 @@
+Server/Debug/
+Server_bsp/Debug/
+Server_bsp/ps7_cortexa9_0/libsrc/
+Server_bsp/ps7_cortexa9_0/lib/
+
+Client/Debug/
+Client_bsp/Debug/
+Client_bsp/ps7_cortexa9_0/libsrc/
+Client_bsp/ps7_cortexa9_0/lib/

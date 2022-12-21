@@ -44,10 +44,7 @@ src/main.o src/main.o: ../src/main.c \
  ../../Server_bsp/ps7_cortexa9_0/include/lwip/prot/icmp.h \
  ../../Server_bsp/ps7_cortexa9_0/include/lwip/prot/tcp.h \
  ../../Server_bsp/ps7_cortexa9_0/include/lwip/init.h \
- ../../Server_bsp/ps7_cortexa9_0/include/lwip/inet.h \
- ../../Server_bsp/ps7_cortexa9_0/include/lwip/dhcp.h \
- ../../Server_bsp/ps7_cortexa9_0/include/lwip/udp.h \
- ../../Server_bsp/ps7_cortexa9_0/include/lwip/prot/udp.h
+ ../../Server_bsp/ps7_cortexa9_0/include/lwip/inet.h
 
 ../../Server_bsp/ps7_cortexa9_0/include/xparameters.h:
 
@@ -142,9 +139,3 @@ src/main.o src/main.o: ../src/main.c \
 ../../Server_bsp/ps7_cortexa9_0/include/lwip/init.h:
 
 ../../Server_bsp/ps7_cortexa9_0/include/lwip/inet.h:
-
-../../Server_bsp/ps7_cortexa9_0/include/lwip/dhcp.h:
-
-../../Server_bsp/ps7_cortexa9_0/include/lwip/udp.h:
-
-../../Server_bsp/ps7_cortexa9_0/include/lwip/prot/udp.h:

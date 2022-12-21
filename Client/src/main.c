@@ -56,6 +56,8 @@ extern volatile int dhcp_timoutcntr;
 extern volatile int TcpFastTmrFlag;
 extern volatile int TcpSlowTmrFlag;
 
+int sentFlags;
+
 void platform_enable_interrupts(void);
 void start_application(void);
 void transfer_data(void);
@@ -178,7 +180,7 @@ int main(void)
 	 * the predefined regular intervals after starting the client.
 	 */
 	dhcp_start(netif);
-	dhcp_timoutcntr = 24;
+	dhcp_timoutcntr = 0;
 	while (((netif->ip_addr.addr) == 0) && (dhcp_timoutcntr > 0))
 		xemacif_input(netif);
 

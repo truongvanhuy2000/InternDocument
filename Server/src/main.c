@@ -215,7 +215,7 @@ int main(void)
 			tcp_slowtmr();
 			TcpSlowTmrFlag = 0;
 		}
-		xemacif_input(netif);
+		//xemacif_input(netif);
 	}
 
 	/* never reached */

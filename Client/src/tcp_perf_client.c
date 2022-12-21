@@ -33,7 +33,6 @@
 static struct tcp_pcb *c_pcb;
 static char send_buf[TCP_SEND_BUFSIZE];
 static struct perf_stats client;
-
 void print_app_header()
 {
 #if LWIP_IPV6==1
@@ -234,7 +233,12 @@ static err_t tcp_client_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
 {
 	return tcp_send_perf_traffic();
 }
-
+static err_t tcp_recv_perf_traffic(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
+{
+	tcp_write(tpcb, p->payload, p->tot_len, 1);
+	pbuf_free(p);
+	return ERR_OK;
+}
 /** TCP connected callback (active connection), send data now */
 static err_t tcp_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
 {
@@ -262,7 +266,9 @@ static err_t tcp_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
 	/* set callback values & functions */
 	tcp_arg(c_pcb, NULL);
 	tcp_sent(c_pcb, tcp_client_sent);
+	tcp_recv(c_pcb, tcp_recv_perf_traffic);
 	tcp_err(c_pcb, tcp_client_err);
+
 
 	/* initiate data transfer */
 	return ERR_OK;
@@ -314,4 +320,18 @@ void start_application(void)
 		send_buf[i] = (i % 10) + '0';
 
 	return;
+}
+void printTheDamnData(struct pbuf* data)
+{
+	int len = data->tot_len;
+	u8 wordRev[len];
+	u8* dataPtr = data->payload;
+	int i;
+	while(i < len)
+	{
+		wordRev[i] = *((u8*)dataPtr);
+		dataPtr++;
+		i++;
+	}
+	xil_printf((const char8 *)wordRev);
 }

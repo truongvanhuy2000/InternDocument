@@ -33,7 +33,7 @@
 extern struct netif server_netif;
 static struct tcp_pcb *c_pcb;
 static struct perf_stats server;
-
+void printTheDamnData(struct pbuf* data);
 void print_app_header(void)
 {
 	xil_printf("TCP server listening on port %d\r\n",
@@ -198,7 +198,8 @@ static err_t tcp_recv_perf_traffic(void *arg, struct tcp_pcb *tpcb,
 	}
 
 	tcp_recved(tpcb, p->tot_len);
-
+	printTheDamnData(p);
+	tcp_write(tpcb, p->payload, p->tot_len, 1);
 	pbuf_free(p);
 	return ERR_OK;
 }
@@ -272,4 +273,18 @@ void start_application(void)
 	tcp_accept(lpcb, tcp_server_accept);
 
 	return;
+}
+void printTheDamnData(struct pbuf* data)
+{
+	int len = data->tot_len;
+	u8 wordRev[len];
+	u8* dataPtr = data->payload;
+	int i;
+	while(i < len)
+	{
+		wordRev[i] = *((u8*)dataPtr);
+		dataPtr++;
+		i++;
+	}
+	xil_printf((const char8 *)wordRev);
 }

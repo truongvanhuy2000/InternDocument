@@ -227,8 +227,6 @@ BEGIN LIBRARY
  PARAMETER LIBRARY_NAME = lwip202
  PARAMETER LIBRARY_VER = 1.2
  PARAMETER PROC_INSTANCE = ps7_cortexa9_0
- PARAMETER dhcp_does_arp_check = true
- PARAMETER lwip_dhcp = true
  PARAMETER mem_size = 524288
  PARAMETER memp_n_pbuf = 1024
  PARAMETER memp_n_tcp_seg = 1024

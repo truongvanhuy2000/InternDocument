@@ -7,3 +7,8 @@ Client/Debug/
 Client_bsp/Debug/
 Client_bsp/ps7_cortexa9_0/libsrc/
 Client_bsp/ps7_cortexa9_0/lib/
+
+FreeRtosUartEthernet/Debug/
+FreeRtosUartEthernet_bsp/Debug/
+FreeRtosUartEthernet_bsp/ps7_cortexa9_0/libsrc/
+FreeRtosUartEthernet_bsp/ps7_cortexa9_0/lib/

@@ -31,12 +31,14 @@
 
 // other things :))
 #include "lwipopts.h"
-#include "lwip/ip_addr.h"
-#include "lwip/err.h"
+#include "xlwipconfig.h"
 #include "lwip/tcp.h"
+#include "lwip/ip_addr.h"
 #include "lwip/inet.h"
+#include "lwip/sockets.h"
+#include "lwip/sys.h"
 #include "xil_printf.h"
-#include "ApplicationData.h"
+#include <sleep.h>
 
 #define TCP_CLIENT_THREAD_STACKSIZE 2048
 
@@ -48,8 +50,6 @@
 
 /* Server to connect with */
 #define TCP_SERVER_IP_ADDRESS "192.168.1.100"
-
-static QueueHandle_t ethernetRxQueue;
 
 int start_application(void);
 void setCallbackFunction(tcp_recv_fn recv);

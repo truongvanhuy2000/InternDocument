@@ -30,75 +30,29 @@
 #include "tcp_perf_client.h"
 /** The report function of a TCP client session */
 
-static struct tcp_pcb *c_pcb;
-u8 connectFlags;
-static void tcp_client_close(struct tcp_pcb *pcb)
-{
-	err_t err;
-
-	if (pcb != NULL) {
-		tcp_sent(pcb, NULL);
-		tcp_err(pcb, NULL);
-		err = tcp_close(pcb);
-		if (err != ERR_OK) {
-			/* Free memory with abort */
-			tcp_abort(pcb);
-		}
-	}
-}
-
-
-void setCallbackFunction(tcp_recv_fn recv)
-{
-	tcp_recv(c_pcb, recv);
-}
-static err_t tcp_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
-{
-	if (err != ERR_OK)
-	{
-		tcp_client_close(tpcb);
-		xil_printf("Connection error\n\r");
-		return err;
-	}
-	/* store state */
-	c_pcb = tpcb;
-	/* set callback values & functions */
-	connectFlags = 1;
-	/* initiate data transfer */
-	return ERR_OK;
-}
 
 int start_application(void)
 {
-	err_t err;
-	struct tcp_pcb *pcb;
+	int sock, i;
+	struct sockaddr_in address;
 	ip_addr_t remote_addr;
-
-	err = inet_aton(TCP_SERVER_IP_ADDRESS, &remote_addr);
-
-	if (!err)
+	memset(&address, 0, sizeof(address));
+	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		xil_printf("Invalid Server IP address: %d\r\n", err);
-		return 0;
+		xil_printf("TCP Client: Error in creating Socket\r\n");
+		return;
 	}
-
-	/* Create Client PCB */
-	pcb = tcp_new_ip_type(IPADDR_TYPE_ANY);
-	if (!pcb)
+	address.sin_family = AF_INET;
+	address.sin_port = htons(TCP_CONN_PORT);
+	address.sin_addr.s_addr = inet_addr(TCP_SERVER_IP_ADDRESS);
+	while (1)
 	{
-		xil_printf("Error in PCB creation. out of memory\r\n");
-		return 0;
+		if (connect(sock, (struct sockaddr *)&address, sizeof(address)) >= 0)
+		{
+			break;
+		}
+		xil_printf("TCP Client: Error on tcp_connect\r\n");
+		close(sock);
 	}
-
-	err = tcp_connect(pcb, &remote_addr, TCP_CONN_PORT,
-					  tcp_client_connected);
-	if (err)
-	{
-		xil_printf("Error on tcp_connect: %d\r\n", err);
-		tcp_client_close(pcb);
-		return 0;
-	}
-	while(connectFlags != 1);
-	connectFlags = 0;
 	return 1;
 }

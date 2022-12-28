@@ -30,16 +30,25 @@ src/main.o src/main.o: ../src/main.c \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic_hw.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_exception.h \
+ ../src/platform_config.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic_hw.h \
  ../src/tcpIpController.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/netif/xadapter.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwipopts.h \
- ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/netif.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/sys.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/opt.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/debug.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/arch.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/arch/cc.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/arch/cpu.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xpseudo_asm.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/err.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/arch/sys_arch.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/semphr.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/queue.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/timers.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/task.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/netif.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/ip_addr.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/def.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/ip4_addr.h \
@@ -64,8 +73,7 @@ src/main.o src/main.o: ../src/main.c \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/prot/tcp.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/init.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/inet.h \
- ../src/platform_config.h ../src/tcp_perf_client.h \
- ../src/ApplicationData.h \
+ ../src/tcp_perf_client.h ../src/ApplicationData.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_types.h
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/FreeRTOS.h:
@@ -130,13 +138,17 @@ src/main.o src/main.o: ../src/main.c \
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_exception.h:
 
+../src/platform_config.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic_hw.h:
+
 ../src/tcpIpController.h:
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/netif/xadapter.h:
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwipopts.h:
 
-../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/netif.h:
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/sys.h:
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/opt.h:
 
@@ -148,7 +160,21 @@ src/main.o src/main.o: ../src/main.c \
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/arch/cpu.h:
 
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xpseudo_asm.h:
+
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/err.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/arch/sys_arch.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/semphr.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/queue.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/timers.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/task.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/netif.h:
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/ip_addr.h:
 
@@ -197,8 +223,6 @@ src/main.o src/main.o: ../src/main.c \
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/init.h:
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/lwip/inet.h:
-
-../src/platform_config.h:
 
 ../src/tcp_perf_client.h:
 

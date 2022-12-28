@@ -9,14 +9,16 @@
 #include "tcpIpController.h"
 // All application will share this data
 #include "ApplicationData.h"
+#include "platform_config.h"
 
 #define START_BYTE 0x55
 #define STOP_BYTE 0xAA
 
 static TaskHandle_t xemacInputHandle;
 static TaskHandle_t uartTxHandle;
-static TaskHandle_t ethernetProcessDataHandle;
 static TaskHandle_t uartProcessRxDataHandle;
+static TaskHandle_t startTaskHandle;
+static TaskHandle_t ethernetRxHandler;
 
 static QueueHandle_t ethernetRxQueue;
 static QueueHandle_t uartRxQueue;
@@ -32,57 +34,102 @@ static err_t tcpRxCallback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
 static void xemacInputTask(void *pvParameters);
 static void xemacInputTask(void *pvParameters);
 static void uartTxTask(void *pvParameters);
-static void processUartRxData(void *pvParameters);
+static void processUartRxTask(void *pvParameters);
+static void initTask(void *pvParameters);
+static void ethernetRxTask(void *pvParameters);
 
 int main()
 {
+    xTaskCreate(xemacInputTask, (const char *)"xemac", 500,
+                NULL, 1, &xemacInputHandle);
+    xTaskCreate(ethernetRxTask, (const char *)"ethernetRx", 500,
+                NULL, 1, &ethernetRxHandler);
+
+    xTaskCreate(uartTxTask, (const char *)"uart tx", 500,
+                NULL, 2, &uartTxHandle);
+
+    xTaskCreate(processUartRxTask, (const char *)"uart process", 500,
+                NULL, 3, &uartProcessRxDataHandle);
+
+    xTaskCreate(initTask, (const char *)"init", 500,
+                NULL, 4, &startTaskHandle);
+
+    ethernetRxQueue = xQueueCreate(1, sizeof(applicationData)); /* Each space in the queue is large enough to hold a uint32_t. */
+    uartRxQueue = xQueueCreate(1, sizeof(applicationData));     /* Each space in the queue is large enough to hold a uint32_t. */
+
+    vTaskStartScheduler();
+    while (1)
+        ;
+    return 0;
+}
+static void ethernetRxTask(void *pvParameters);
+{
+    applicationData tempData;
+    static int state = 0;
+    switch (state)
+    {
+    case 0:
+        if (p->tot_len != 1)
+        {
+            tcp_write(tpcb, "data invalid, must be in the range of 0-255d, please send again\n", 65, TCP_WRITE_FLAG_COPY);
+            break;
+        }
+        tempData.data0 = *((u8 *)p->payload);
+        tcp_write(tpcb, "please send data 1:\n", 21, TCP_WRITE_FLAG_COPY);
+        state = 1;
+        break;
+    case 1:
+        if (p->tot_len != 1)
+        {
+            tcp_write(tpcb, "data invalid, must be in the range of 0-255d, please send again\n", 65, TCP_WRITE_FLAG_COPY);
+            break;
+        }
+        tempData.data0 = *((u8 *)p->payload);
+        state = 3;
+        break;
+    default:
+        tcp_write(tpcb, "please send data 0:\n", 21, TCP_WRITE_FLAG_COPY);
+        state = 0;
+        break;
+    }
+}
+// function for task
+static void initTask(void *pvParameters)
+{
+    platform_setup_interrupts();
     if (!uartControllerConfig())
     {
         print("Uart configuration error");
-        return 0;
+        return;
     }
+    platform_enable_interrupts();
     if (!tcpIpControllerConfig())
     {
         print("TCP/IP configuration error");
         return 0;
     }
-    xTaskCreate(xemacInputTask, (const char *)"xemac", configMINIMAL_STACK_SIZE,
-                NULL, 1, &xemacInputHandle);
-    xTaskCreate(ethernetProcessDataTask, (const char *)"ethernet", configMINIMAL_STACK_SIZE,
-                NULL, 1, &ethernetProcessDataHandle);
-    xTaskCreate(uartTxTask, (const char *)"uart tx", configMINIMAL_STACK_SIZE,
-                NULL, 2, &uartTxHandle);
-    xTaskCreate(processUartRxData, (const char *)"uart process", configMINIMAL_STACK_SIZE,
-                NULL, 3, &uartProcessRxDataHandle);
-
-    ethernetRxQueue = xQueueCreate(1, sizeof(struct pbuf *)); /* Each space in the queue is large enough to hold a uint32_t. */
-    configASSERT(ethernetRxQueue);
-    uartRxQueue = xQueueCreate(1, sizeof(applicationData)); /* Each space in the queue is large enough to hold a uint32_t. */
-    configASSERT(uartRxQueue);
-    vTaskStartScheduler();
-    return 0;
+    vTaskDelete(startTaskHandle);
 }
 static void xemacInputTask(void *pvParameters)
 {
     for (;;)
     {
-        xemacif_input(&server_netif);
-    }
-}
-static void ethernetProcessDataTask(void *pvParameters)
-{
-    for (;;)
-    {
+        // xemacif_input(&server_netif);
+        XUartLite_Send(&uart1, "dcmm", 4);
     }
 }
 static void uartTxTask(void *pvParameters)
 {
+    applicationData tempData;
     for (;;)
     {
-        xQueueReceive(uartRxQueue, &tempData, portMAX_DELAY);
+        xQueueReceive(ethernetRxQueue, &tempData, portMAX_DELAY);
+        tempData.startByte = 0x55;
+        tempData.stopByte = 0xAA;
+        XUartLite_Send(&uart1, &tempData, 4);
     }
 }
-static void processUartRxData(void *pvParameters)
+static void processUartRxTask(void *pvParameters)
 {
     applicationData tempData;
     for (;;)
@@ -104,6 +151,7 @@ static void processUartRxData(void *pvParameters)
         free(data);
     }
 }
+// Function to config uart and tcp ip
 XStatus uartControllerConfig()
 {
     if (uartConfig() != XST_SUCCESS)
@@ -122,9 +170,10 @@ XStatus tcpIpControllerConfig()
     {
         return 0;
     }
-    setCallbackFunction(tcp_recv);
     return 1;
 }
+// callback function
+
 static void uartRecvCallback(void *CallBackRef, unsigned int ByteCount)
 {
     BaseType_t xHigherPriorityTaskWoken;
@@ -139,9 +188,44 @@ static void uartRecvCallback(void *CallBackRef, unsigned int ByteCount)
     }
     XUartLite_Recv(CallBackRef, dataBuff, 4);
     data = *((applicationData *)dataBuff);
-    xQueueSendToFrontFromISR(uartRxQueue, &data, xHigherPriorityTaskWoken);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    XUartLite_ResetFifos(&uart2);
+    //    xQueueSendToFrontFromISR(uartRxQueue, &data, xHigherPriorityTaskWoken);
+    //    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
+
 err_t tcpRxCallback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
 {
+    BaseType_t xHigherPriorityTaskWoken;
+    applicationData tempData;
+    static int state = 0;
+    switch (state)
+    {
+    case 0:
+        if (p->tot_len != 1)
+        {
+            tcp_write(tpcb, "data invalid, must be in the range of 0-255d, please send again\n", 65, TCP_WRITE_FLAG_COPY);
+            break;
+        }
+        tempData.data0 = *((u8 *)p->payload);
+        tcp_write(tpcb, "please send data 1:\n", 21, TCP_WRITE_FLAG_COPY);
+        state = 1;
+        break;
+    case 1:
+        if (p->tot_len != 1)
+        {
+            tcp_write(tpcb, "data invalid, must be in the range of 0-255d, please send again\n", 65, TCP_WRITE_FLAG_COPY);
+            break;
+        }
+        tempData.data0 = *((u8 *)p->payload);
+        tcp_write(tpcb, "done\n", 21, TCP_WRITE_FLAG_COPY);
+        state = 3;
+        break;
+    default:
+        tcp_write(tpcb, "please send data 0:\n", 21, TCP_WRITE_FLAG_COPY);
+        xQueueSendToFrontFromISR(ethernetRxQueue, &tempData, xHigherPriorityTaskWoken);
+        state = 0;
+        break;
+    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    return 0;
 }

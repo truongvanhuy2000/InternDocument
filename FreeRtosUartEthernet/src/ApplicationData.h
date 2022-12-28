@@ -9,6 +9,4 @@ typedef struct
     u8 data1;
     u8 stopByte;
 } applicationData;
-
-applicationData data = {0, 0, 0, 0};
 #endif

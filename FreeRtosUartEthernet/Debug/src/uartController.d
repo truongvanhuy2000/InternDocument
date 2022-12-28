@@ -19,7 +19,9 @@ src/uartController.o src/uartController.o: ../src/uartController.c \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic_hw.h \
  ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_exception.h \
- ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_printf.h
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_printf.h \
+ ../src/platform_config.h \
+ ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic_hw.h
 
 ../src/uartController.h:
 
@@ -62,3 +64,7 @@ src/uartController.o src/uartController.o: ../src/uartController.c \
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_exception.h:
 
 ../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xil_printf.h:
+
+../src/platform_config.h:
+
+../../FreeRtosUartEthernet_bsp/ps7_cortexa9_0/include/xscugic_hw.h:
